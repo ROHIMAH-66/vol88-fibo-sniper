@@ -1,36 +1,23 @@
 
-name: VOL 88 Fibo Sniper
-
-on:
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-jobs:
-  scan:
-    runs-on: ubuntu-latest
-
-    steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Debug files
-        run: |
-          echo "ROOT DIRECTORY"
-          pwd
-          echo "FILES"
-          ls -la
-          echo "PYTHON FILES"
-          find . -type f -iname "*.py"
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Run scanner
+      - name: Install requirements
         run: |
-          python -c "import os; print(os.listdir('.'))"
-          python ./Scanner.py
-          
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Verify requests
+        run: python -c "import requests; print('REQUESTS OK')"
+
+      - name: Run scanner
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python Scanner.py
+        
